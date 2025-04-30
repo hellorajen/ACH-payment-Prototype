@@ -1,0 +1,35 @@
+{% extends 'payments/base.html' %}
+
+{% block content %}
+<h2>Add Bank Account</h2>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Add Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                ACH Information
+            </div>
+            <div class="card-body">
+                <p>For testing purposes, you can use these routing numbers:</p>
+                <ul>
+                    <li><strong>Valid routing number:</strong> 021000021 (Chase NY)</li>
+                    <li><strong>Account number:</strong> Any 10-12 digit number</li>
+                </ul>
+                <p class="text-muted">In a production app, we would verify accounts through Plaid or similar service.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

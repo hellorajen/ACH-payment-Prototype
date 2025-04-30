@@ -1,0 +1,79 @@
+{% extends 'payments/base.html' %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Your Bank Accounts
+                <a href="{% url 'add_bank_account' %}" class="btn btn-sm btn-primary float-end">Add Account</a>
+            </div>
+            <div class="card-body">
+                {% if accounts %}
+                <ul class="list-group">
+                    {% for account in accounts %}
+                    <li class="list-group-item">
+                        {{ account.institution_name }} - {{ account.get_account_type_display }}
+                        <br>
+                        <small class="text-muted">••••{{ account.account_number|slice:"-4:" }}</small>
+                        {% if account.is_verified %}
+                        <span class="badge bg-success float-end">Verified</span>
+                        {% else %}
+                        <span class="badge bg-warning float-end">Pending Verification</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No bank accounts added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Recent Transactions
+                <a href="{% url 'initiate_transfer' %}" class="btn btn-sm btn-primary float-end">New Transfer</a>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tx in transactions %}
+                            <tr>
+                                <td>{{ tx.created_at|date:"M d, Y" }}</td>
+                                <td>${{ tx.amount }}</td>
+                                <td>
+                                    <span class="badge 
+                                                {% if tx.status == 'processed' %}bg-primary
+                                                {% elif tx.status == 'settled' %}bg-success
+                                                {% elif tx.status == 'failed' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                        {{ tx.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No transactions yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
