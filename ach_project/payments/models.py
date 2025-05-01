@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 import uuid
 
+
 class BankAccount(models.Model):
     """Represents a linked bank account for ACH transfers"""
     ACCOUNT_TYPES = [
@@ -17,7 +18,7 @@ class BankAccount(models.Model):
     routing_number = models.CharField(max_length=9)  # ABA routing number
     account_number = models.CharField(max_length=17)  # Typically 10-12 digits
     institution_name = models.CharField(max_length=255)
-    # models.py
+    
     balance = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -55,3 +56,15 @@ class ACHEntry(models.Model):
 
     def __str__(self):
         return f"ACH {self.id}: ${self.amount} ({self.get_status_display()})"
+    
+    
+class Transfer(models.Model):
+    source_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, related_name='outgoing_transfers')
+    destination_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, related_name='incoming_transfers')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='pending')  # e.g., "completed", "failed"
+
+    def __str__(self):
+        return f"Transfer #{self.id}"
+

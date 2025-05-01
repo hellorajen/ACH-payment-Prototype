@@ -10,6 +10,7 @@ import requests
 from django.http import JsonResponse, HttpResponse  # Added HttpResponse
 from django.contrib.auth.models import User
 import json
+from .models import Transfer  # Assuming you have a Transfer model for tracking transfers
 
 @login_required
 def sensitive_action(request):
@@ -137,3 +138,9 @@ def mock_plaid_verification(request):
             return JsonResponse({'status': 'error', 'message': 'Account not found'}, status=404)
     
     return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=400)
+
+
+def transfer_details(request, transfer_id):
+    transfer = Transfer.objects.get(id=transfer_id)
+    logs = transfer.history.all()  # Query audit logs for this transfer
+    return render(request, 'transfer_details.html', {'transfer': transfer, 'logs': logs})

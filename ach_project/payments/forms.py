@@ -2,11 +2,12 @@ from django import forms
 from .models import BankAccount, ACHEntry
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 class BankAccountForm(forms.ModelForm):
     class Meta:
         model = BankAccount
-        fields = ['account_holder_name', 'account_type', 'routing_number', 'account_number', 'institution_name']
+        fields = ['account_holder_name', 'account_type', 'routing_number', 'account_number', 'institution_name', 'balance']
         widgets = {
             'account_number': forms.PasswordInput(render_value=True),
             'routing_number': forms.PasswordInput(render_value=True),
@@ -44,3 +45,13 @@ class ACHEntryForm(forms.ModelForm):
                 'min': '0.01'
             })
         )
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        source = cleaned_data.get('source_account')
+        destination = cleaned_data.get('destination_account')
+
+        if source and destination and source == destination:
+            raise ValidationError("Source and destination accounts cannot be the same.")
+        return cleaned_data
+    
