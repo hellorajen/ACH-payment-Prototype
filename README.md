@@ -90,3 +90,6 @@ python manage.py createsuperuser
 
 # run the app again 
 python manage.py runserver
+
+# to query audit logs -Audit logs are critical for security, compliance (e.g., PCI-DSS, SOX)
+
